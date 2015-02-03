@@ -16,8 +16,6 @@ https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
 - AddOn Menu "Split selection by last char" 
 - AddOn Menu "New-ISEMenu" (integrated AddOn to create new entries for the AddOn Menu)
 - AddOn Menu "New-ISESnippet" (integrated AddOn to create new Snippets)
--
-
 
 
 
