@@ -1,8 +1,9 @@
-# ISEAddon
+# ISEUtils
 Collection of some useful additions for the built-in PowerShell ISE
 Some functions (New-ISESnippet, New-ISEMenu) are PowerShell only integrated (making use of the VerticalAddOnToolbar Add-Ons). List of functions with short description:
 
 references for zen coding
+
 https://github.com/madskristensen/zencoding
 https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
 
