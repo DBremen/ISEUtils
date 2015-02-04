@@ -4,7 +4,7 @@ Some functions (New-ISESnippet, New-ISEMenu) are PowerShell only integrated (mak
 
 references for zen coding
 
-https://github.com/madskristensen/zencoding
+https://github.com/madskristensen/zencoding  
 https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
 
 - Get-ZenCode (PowerShell version of zen Coding based on WebEssentials VisualStudio extension version, with added functionality for pipeline input. See examples in Get-ZenCode.ps1. The function returns the expanded zen Code expression)
