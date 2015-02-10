@@ -132,7 +132,9 @@ $(if ($PSCmdlet.ParameterSetName -eq 'CreateOnly'){
                 Runspace.DefaultRunspace.ApartmentState != System.Threading.ApartmentState.STA ||
                 Runspace.DefaultRunspace.ThreadOptions != PSThreadOptions.UseCurrentThread) {
                 InitialSessionState iss = InitialSessionState.CreateDefault();
-                iss.ImportPSModule(new string[] { "ShowUI" });
+                Uri directorySearcherUri= new Uri(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
+                string directorySearcherPath = System.IO.Path.Combine(System.IO.Path.GetFileName(directorySearcherUri.LocalPath),"DirectorySearcher.dll");
+                iss.ImportPSModule(new string[] { "ShowUI",directorySearcherPath });
                 Runspace rs  = RunspaceFactory.CreateRunspace(iss);
                 rs.ApartmentState = System.Threading.ApartmentState.STA;
                 rs.ThreadOptions = PSThreadOptions.UseCurrentThread;

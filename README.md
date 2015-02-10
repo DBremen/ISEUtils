@@ -12,11 +12,13 @@ https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
 - Get-ISESnippet 
 - Remove-ISESnippet
 - Add-ISESnippet
+- Get-File (f# based PowerShell cmdlet wrapper around Directory.GetFiles ignoring PathTooLong and AccessDenied exceptions)
 - AddOn Menu "Expand ZenCode" (Enables zen Coding within PowerShell ISE, zen Code expressions are expanded by using the AddOn menu or assigned keyboard shortcut)
 - AddOn Menu "Run Line" (execute line that contains current cursor position)
 - AddOn Menu "Split selection by last char" 
 - AddOn Menu "New-ISEMenu" (integrated AddOn to create new entries for the AddOn Menu)
 - AddOn Menu "New-ISESnippet" (integrated AddOn to create new Snippets)
+- AddOn Menu "FileTree" (integrated AddOn that shows a tree with folders (on first drive) that contain .ps1 and .psm1 files, clicking on a file node will open the file within ISE)
 
 
 

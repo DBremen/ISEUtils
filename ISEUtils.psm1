@@ -8,10 +8,12 @@
 
 #compiled functions
 Add-Type -Path $PSScriptRoot\resources\ISEUtils.dll
+ipmo $PSScriptRoot\resources\DirectorySearcher.dll
+
 
 $newISEMenu = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("New-ISEMenu",[ISEUtils.NewISEMenu],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "New-ISEMenu"}).IsVisible=$true')
 $newISESnippet = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("New-ISESnippet",[ISEUtils.NewISESnippet],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "New-ISESnippet"}).IsVisible=$true')
-
+$fileTree = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("FileTree",[ISEUtils.FileTree],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "FileTree"}).IsVisible=$true')
 
 #inline functions 
 $expandZenCode = {
@@ -70,7 +72,8 @@ Add-SubMenu $menu 'Run Line' $runLine 'F2'
 Add-SubMenu $menu 'Split Selection by last char' $splitSelectionByLastChar $null
 Add-SubMenu $menu 'New-ISESnippet' $newISESnippet $null
 Add-SubMenu $menu 'New-ISEMenu' $newISEMenu $null
+Add-SubMenu $menu 'FileTree' $fileTree $null
 Add-SubMenu $menu 'Remove ISEUtils' $removeMenu $null
 
 
-Export-ModuleMember -Function ("Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet") -Alias zenCode
+Export-ModuleMember -Function ("Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet","Get-File") -Alias zenCode
