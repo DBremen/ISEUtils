@@ -127,14 +127,14 @@ $(if ($PSCmdlet.ParameterSetName -eq 'CreateOnly'){
             "public IseAddOn${addOnNumber}() { }"
         })
 
+        private string folderPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
         public void Run() {
             if (Runspace.DefaultRunspace == null ||
                 Runspace.DefaultRunspace.ApartmentState != System.Threading.ApartmentState.STA ||
                 Runspace.DefaultRunspace.ThreadOptions != PSThreadOptions.UseCurrentThread) {
                 InitialSessionState iss = InitialSessionState.CreateDefault();
-                Uri directorySearcherUri= new Uri(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
-                string directorySearcherPath = System.IO.Path.Combine(System.IO.Path.GetFileName(directorySearcherUri.LocalPath),"DirectorySearcher.dll");
-                iss.ImportPSModule(new string[] { "ShowUI",directorySearcherPath });
+                iss.ImportPSModule(new string[] { "ShowUI",System.IO.Path.Combine( folderPath, "DirectorySearcher.dll") });
                 Runspace rs  = RunspaceFactory.CreateRunspace(iss);
                 rs.ApartmentState = System.Threading.ApartmentState.STA;
                 rs.ThreadOptions = PSThreadOptions.UseCurrentThread;
