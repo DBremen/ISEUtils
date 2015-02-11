@@ -1,0 +1,31 @@
+ISEUtils.psm1[36m:[m#[1;31mmenu[m items
+ISEUtils.psm1[36m:[m    $[1;31mmenu[m = $psISE.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms | where DisplayName -eq 'ISEUtils'
+ISEUtils.psm1[36m:[m    [void]$psISE.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms.Remove($[1;31mmenu[m)
+ISEUtils.psm1[36m:[mfunction Add-SubMenu($[1;31mmenu[m,$displayName,$code,$shortCut=$null){
+ISEUtils.psm1[36m:[m        [void]$[1;31mmenu[m.Sub[1;31mmenu[ms.Add($displayName, $code,  $shortCut)
+ISEUtils.psm1[36m:[m        [void]$[1;31mmenu[m.Sub[1;31mmenu[ms.Add($displayName, $code,  $shortCut)
+ISEUtils.psm1[36m:[m$[1;31mmenu[m = $psISE.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms.Add('ISEUtils', $null, $null)
+ISEUtils.psm1[36m:[mAdd-SubMenu $[1;31mmenu[m 'Expand ZenCode' $expandZenCode 'CTRL+SHIFT+J'
+ISEUtils.psm1[36m:[mAdd-SubMenu $[1;31mmenu[m 'Run Line' $runLine 'F2'
+ISEUtils.psm1[36m:[mAdd-SubMenu $[1;31mmenu[m 'Split Selection by last char' $splitSelectionByLastChar $null
+ISEUtils.psm1[36m:[mAdd-SubMenu $[1;31mmenu[m 'New-ISESnippet' $newISESnippet $null
+ISEUtils.psm1[36m:[mAdd-SubMenu $[1;31mmenu[m 'New-ISEMenu' $newISEMenu $null
+ISEUtils.psm1[36m:[mAdd-SubMenu $[1;31mmenu[m 'Remove ISEUtils' $removeMenu $null
+README.md[36m:[m- AddOn Menu "Expand ZenCode" (Enables zen Coding within PowerShell ISE, zen Code expressions are expanded by using the AddOn [1;31mmenu[m or assigned keyboard shortcut)
+functions/Get-ISEShortcuts.ps1[36m:[m    $psISE.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms | foreach{
+functions/Get-ISEShortcuts.ps1[36m:[m        $[1;31mmenu[m = $_.DisplayName
+functions/Get-ISEShortcuts.ps1[36m:[m           [PSCustomObject][ordered]@{Type='Add-on'; Name=$[1;31mmenu[m; SubMenu=""; ShortCut=$shortCut}
+functions/Get-ISEShortcuts.ps1[36m:[m            [PSCustomObject][ordered]@{Type='Add-on'; Name=$[1;31mmenu[m; SubMenu=$_.DisplayName; ShortCut=$shortCut}
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m    $existingShortcuts = $psISE.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms | foreach{
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m            $[1;31mmenu[m = $_.DisplayName
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m            -Items (@("No parent [1;31mmenu[m")+($psISE.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms | where {!$_.Action}).DisplayName) `
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                if ($comboMenus.SelectedValue -ne 'No parent [1;31mmenu[m'){
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                    $[1;31mmenu[mItems = ($psise.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms | where {$_.DisplayName -eq $comboMenus.SelectedValue}).SubMenus.DisplayName
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                    $[1;31mmenu[mItems = $psise.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms | Select -ExpandProperty DisplayName
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                if ($[1;31mmenu[mItems -Contains $txtName.Text) {
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                    $Warning.Text = "The name for the [1;31mmenu[m is already present"
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                if ($comboMenus.SelectedValue -ne 'No parent [1;31mmenu[m'){
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                    $[1;31mmenu[m = $psISE.CurrentPowerShellTab.AddOnsMenu.SubMenus | where {$_.DisplayName -eq $comboMenus.SelectedValue}
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                    $[1;31mmenu[m = $psISE.CurrentPowerShellTab.AddOnsMenu
+functions/PowerShellSourceCompiledFunctions.ps1[36m:[m                    $[1;31mmenu[m.SubMenus.Add($txtName.Text,$scriptBlock,$shortCut) | Out-Null
+resources/ConvertTo-ISEAddOn.ps1[36m:[m                $psISE.CurrentPowerShellTab.AddOnsMenu.Sub[1;31mmenu[ms.Add($name, $sb, $null)
