@@ -1,4 +1,8 @@
-﻿. $PSScriptRoot\functions\Get-ZenCode.ps1
+﻿if ($host.Name -ne 'Windows PowerShell ISE Host'){
+    Write-Warning "The Module can be only installed from within ISE"
+    exit
+}
+. $PSScriptRoot\functions\Get-ZenCode.ps1
 . $PSScriptRoot\functions\Get-ISEShortcuts.ps1
 . $PSScriptRoot\functions\Add-ISESnippet.ps1
 . $PSScriptRoot\functions\Get-ISESnippet.ps1
