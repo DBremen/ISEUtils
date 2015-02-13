@@ -184,7 +184,7 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
             $_.Handled = $true
             })
         New-Label "Shortcut _Key" -Row $Row -Target $txtShortcut -FontWeight ([System.Windows.FontWeights]::Bold) 
-        ($txtScriptBlock = New-TextBox -Name txtScriptBlock -Margin 5 -Column 1 -FontSize 16 -Row ($Row+=1) -MinHeight 141 -MinWidth 336 -AcceptsReturn:$true -HorizontalScrollBarVisibility Auto -VerticalScrollBarVisibility Auto)
+        ($txtScriptBlock = New-TextBox -Name txtScriptBlock -Margin 5 -Column 1 -FontSize 16 -Row ($Row+=1) -MinHeight 141 -AcceptsReturn:$true -HorizontalScrollBarVisibility Auto -VerticalScrollBarVisibility Auto)
         New-Label "Script _Block" -Row $Row -Target $txtScriptBlock -FontWeight ([System.Windows.FontWeights]::Bold)
         New-CheckBox "_Add to ISE Profile" -Name chkProfile -Row ($Row+=1)
         New-StackPanel -Orientation Horizontal  -Column 1 -Row ($Row+=1) -HorizontalAlignment Right -Margin 5 {
@@ -342,7 +342,7 @@ $newISESnippet={
         ($txtDescription = New-TextBox -Name txtDescription -Column 1 -Row ($Row+=1) -Margin 5 -FontSize 16)
         New-Label "_Description*" -Row $Row -Target $txtDescription -FontWeight ([System.Windows.FontWeights]::Bold) 
         ($txtCode = New-TextBox -Name txtCode -Margin 5 -Column 1 -FontSize 16 -Row ($Row+=1) -MinHeight 141 `
-           -MinWidth 336 -AcceptsReturn:$true -HorizontalScrollBarVisibility Auto -VerticalScrollBarVisibility Auto `
+           -AcceptsReturn:$true -HorizontalScrollBarVisibility Auto -VerticalScrollBarVisibility Auto `
            -On_TextChanged{
                 $caretOffset = $this.Text.IndexOf('^')
                 if ($caretOffset -ne -1){
