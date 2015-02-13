@@ -378,11 +378,135 @@ $newISESnippet={
                 }
            }-On_Loaded{
                 $code = $psise.CurrentPowerShellTab.Files.SelectedFile.Editor.SelectedText
-                $caretOffset = $code.IndexOf('^')
-                if ($caretOffset -eq -1){
-                    $caretOffset = ""
+                if ($code){
+                    $caretOffset = $code.IndexOf('^')
+                    if ($caretOffset -eq -1){
+                        $caretOffset = ""
+                    }
+                    $this.Text = $caretOffset
+                } = . Get-WebInput -Control  -CommandMetaData 
+New-Grid -Rows 1* -RoutedEvent @{
+    [Windows.Controls.Button]::ClickEvent = {
+        
+        try {            
+            if ($_.Source.Name -ne 'AddCommentHelp_Invoke') {
+                return
+            }
+            $value = Get-ChildControl -Control $this -OutputNamedControl
+            foreach ($kv in @($value.GetEnumerator())) {
+                if (($kv.Key -notlike "AddCommentHelp_*")) {
+                    $value.Remove($kv.Key)
                 }
-                $this.Text = $caretOffset
+            }
+
+            foreach ($kv in @($value.GetEnumerator())) {
+                if ($kv.Value.Text) {
+                    $value[$kv.Key] = $kv.Value.Text
+                } elseif ($kv.Value.SelectedItems) {
+                    $value[$kv.Key] = $kv.Value.SelectedItems
+                } elseif ($kv.Value -is [Windows.Controls.Checkbox] -and $kv.Value.IsChecked) {
+                    $value[$kv.Key] = $kv.Value.IsChecked
+                } else {
+                    $value.Remove($kv.Key)
+                }
+            }
+
+            foreach ($kv in @($value.GetEnumerator())) {
+                $newKey = $kv.Key.Replace("AddCommentHelp_", "")
+                $newValue = $kv.Value
+                $value.Remove($kv.Key)
+                $value.$newKey = $newValue
+            }
+
+            $mainRunspace = [Windows.Window]::getWindow($this).Resources.MainRunspace
+            if ($value) {                
+                
+                
+                if ($mainRunspace.RunspaceAvailability -ne 'Busy') {
+                    $mainRunspace.SessionStateProxy.SetVariable("IcicleCommandParameter", $value) 
+                }
+            }
+            
+            if ($mainRunspace.RunspaceAvailability -ne 'Busy') {
+                $this.Parent.HostObject.CurrentPowerShellTab.Invoke({
+                    if ($IcicleCommandParameter ) {
+                        Add-CommentHelp @IcicleCommandParameter 
+                    } else {
+                        'Parameters Not Found'
+                    }
+                    #Remove-Variable IcicleCommandParameter 
+                })
+            }
+        } catch {
+            [Windows.MessageBox]::Show("$($_ | Out-String)", "Error")
+        }
+    }
+} -ControlName 'Add-CommentHelp' -Children {
+    [Windows.Markup.XamlReader]::Parse(@'
+<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ScrollViewer>
+    <StackPanel>
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="Synopsis" />
+      <TextBlock Name="Synopsis_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    A short function synopsis
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_Synopsis" Tag="Type:System.String" />
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="Description" />
+      <TextBlock Name="Description_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    A longer function description.
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_Description" Tag="Type:System.String" />
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="param1Name" />
+      <TextBlock Name="param1Name_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    The first parameter Name
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_param1Name" Tag="Type:System.String" />
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="param1Description" />
+      <TextBlock Name="param1Description_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    The first parameter Description
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_param1Description" Tag="Type:System.String" />
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="param2Name" />
+      <TextBlock Name="param2Name_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    The first parameter Name
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_param2Name" Tag="Type:System.String" />
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="param2Description" />
+      <TextBlock Name="param2Description_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    The first parameter Description
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_param2Description" Tag="Type:System.String" />
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="Link" />
+      <TextBlock Name="Link_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    A reference link
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_Link" Tag="Type:System.String" />
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="Example1" />
+      <TextBlock Name="Example1_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    An example
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_Example1" Tag="Type:System.String" />
+      <TextBlock FontSize="19" Margin="28 2 0 3" FontWeight="Bold" Text="Example2" />
+      <TextBlock Name="Example2_Description_TextBlock" FontSize="14" Margin="7,0, 5,0" TextWrapping="Wrap">
+                    An example
+                </TextBlock>
+      <TextBox Margin="7, 5, 7, 5" x:Name="AddCommentHelp_Example2" Tag="Type:System.String" />
+      <CheckBox Margin="5, 5, 2, 0" x:Name="AddCommentHelp_OutputText">
+        <StackPanel Margin="3,-5,0,0">
+          <TextBlock Name="OutputText_ParameterName_TextBlock" FontSize="19" FontWeight="Bold" Text="Output Text" />
+          <TextBlock Name="OutputText_Description_TextBlock" FontSize="14" TextWrapping="Wrap">
+          </TextBlock>
+        </StackPanel>
+      </CheckBox>
+      <Button HorizontalAlignment="Stretch" x:Name="AddCommentHelp_Invoke" Margin="7">
+        <TextBlock FontSize="19" FontWeight="Bold" Text="Add Comment Help" />
+      </Button>
+    </StackPanel>
+  </ScrollViewer>
+</Grid>
+'@)
+}
+
            })
         New-Label "CaretOffse_t (marked`nby'^' within code)" -Row $Row -Target $txtCaretOffset -FontWeight ([System.Windows.FontWeights]::Bold)
         ($txtAuthor = New-TextBox -Name txtAuthor -Text $env:USERNAME -Margin 5 -Column 1 -FontSize 16 -Row ($Row+=1))
