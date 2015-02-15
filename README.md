@@ -19,7 +19,8 @@ https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
 - AddOn Menu "New-ISEMenu" (integrated AddOn to create new entries for the AddOn Menu)
 - AddOn Menu "New-ISESnippet" (integrated AddOn to create new Snippets)
 - AddOn Menu "FileTree" (integrated AddOn that shows a tree with folders (on first drive) that contain .ps1 and .psm1 files, clicking on a file node will open the file within ISE)
-- Addon Menu "Add-ScriptHelp" (integrated AddOn to generate help documentation for scripts/cmdlets. The generated output is added to the ISE and can be also copied to the clipboard)
+- AddOn Menu "Add-ScriptHelp" (integrated AddOn to generate help documentation for scripts/cmdlets. The generated output is added to the ISE and can be also copied to the clipboard)
+- AddOn Menu "Open-ScriptFolder" (opens the folder that contains the current script within windows explorer)
 
 
 

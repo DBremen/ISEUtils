@@ -21,6 +21,7 @@ $fileTree = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTool
 $addScriptHelp = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("Add-ScriptHelp",[ISEUtils.AddScriptHelp],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "Add-ScriptHelp"}).IsVisible=$true')
 
 #inline functions 
+$openScriptFolder = { Invoke-Item (Split-Path $psISE.CurrentFile.FullPath) }
 $expandZenCode = {
     $currEditor = $psISE.CurrentFile.Editor
     $col = $currEditor.CaretLineText.Length - $currEditor.CaretLineText.TrimStart().Length
@@ -79,6 +80,7 @@ Add-SubMenu $menu 'New-ISESnippet' $newISESnippet $null
 Add-SubMenu $menu 'New-ISEMenu' $newISEMenu $null
 Add-SubMenu $menu 'FileTree' $fileTree $null
 Add-SubMenu $menu 'Add-ScriptHelp' $addScriptHelp $null
+Add-SubMenu $menu 'Open-ScriptFolder' $openScriptFolder $null
 Add-SubMenu $menu 'Remove ISEUtils' $removeMenu $null
 
 
