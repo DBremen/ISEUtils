@@ -11,6 +11,7 @@
 #menu items
 
 #compiled functions
+#region
 Add-Type -Path $PSScriptRoot\resources\ISEUtils.dll
 ipmo $PSScriptRoot\resources\DirectorySearcher.dll
 
@@ -19,8 +20,80 @@ $newISEMenu = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTo
 $newISESnippet = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("New-ISESnippet",[ISEUtils.NewISESnippet],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "New-ISESnippet"}).IsVisible=$true')
 $fileTree = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("FileTree",[ISEUtils.FileTree],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "FileTree"}).IsVisible=$true')
 $addScriptHelp = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("Add-ScriptHelp",[ISEUtils.AddScriptHelp],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "Add-ScriptHelp"}).IsVisible=$true')
+#endregion
 
 #inline functions 
+#region
+
+###ISE Session###
+<#
+    Modified version of ISE Session Tools Module 1.0
+    
+    Oisin Grehan (MVP)    
+    http://www.nivot.org/
+#>
+#region
+$SCRIPT:defaultSessionFile = "$(Split-Path $profile)\psISE.session.clixml"
+
+
+$exportISESession = {
+    $SaveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
+    $SaveFileDialog.Title = "Save PS session file"
+    $SaveFileDialog.InitialDirectory = (Split-Path $profile)
+    $SaveFileDialog.Filter = "All files (PowerShell session file)| *.session.clixml"
+    if ($SaveFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
+        $sessionFile = $SaveFileDialog.FileName        $psise.CurrentPowerShellTab.files | ? { -not $_.IsUntitled } | % {
+            $_.save(); $_ } | Export-Clixml -Force $sessionFile
+    } 
+}
+
+$ImportISESession = {
+    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $openFileDialog.Title = "Open PS session file"
+    $openFileDialog.InitialDirectory = (Split-Path $profile)
+    $openFileDialog.Filter = "All files (PowerShell session file)| *.session.clixml"
+    if ($openFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
+        $sesionFile = $openFileDialog.FileName
+        import-clixml $sessionFile | % {
+            try {
+                $psise.CurrentPowerShellTab.files.Add($_.fullpath)
+            } catch { write-error $_ }
+        }
+    }
+}
+
+Register-ObjectEvent $psise.CurrentPowerShellTab.Files CollectionChanged -Action {
+    # files collection
+    try {
+        $sender | ? {-not $_.IsUntitled} | % { $_.save(); $_ } | Export-Clixml -Force $event.messagedata
+    } catch {
+        # convert terminating errors to non-terminating
+        write-error $_
+    }
+} -sourceidentifier AutoSaveSession -messagedata $defaultSessionFile > $null
+
+
+if ((test-path $defaultSessionFile)) {      
+    $files = Import-Clixml $defaultSessionFile    
+    # only load if we've got something to load       
+    if ($files.count -gt 0) {
+        # just show first two of the last files in the session as a reminder
+        $hint = ($files|select -first 2 -expand displayname) -join ","
+            
+        # default to YES
+        if ($host.ui.PromptForChoice("Session Restore",
+            ("Load last session of {0} file(s) into current tab?`n`nHint: {1}, ..." -f $files.count, $hint),
+            [Management.Automation.Host.ChoiceDescription[]]@("&Yes", "&No"), 0) -eq 0) {
+            Import-CliXML $defaultSessionFile | % {
+                try {
+                    $psise.CurrentPowerShellTab.files.Add($_.fullpath)
+                } catch { write-error $_ }
+            }
+        }
+    }
+}
+
+#endregion
 $openScriptFolder = { Invoke-Item (Split-Path $psISE.CurrentFile.FullPath) }
 $expandZenCode = {
     $currEditor = $psISE.CurrentFile.Editor
@@ -58,7 +131,7 @@ $removeMenu = {
     [Microsoft.VisualBasic.Interaction]::Msgbox('To completly remove ISEUtils you will also need to delete the entry from your profile',"Exclamation","")
 }
 
-
+#endregion
 
 #add Menu items
 Add-Type -AssemblyName Microsoft.VisualBasic
@@ -81,7 +154,14 @@ Add-SubMenu $menu 'New-ISEMenu' $newISEMenu $null
 Add-SubMenu $menu 'FileTree' $fileTree $null
 Add-SubMenu $menu 'Add-ScriptHelp' $addScriptHelp $null
 Add-SubMenu $menu 'Open-ScriptFolder' $openScriptFolder $null
+Add-SubMenu $menu 'Export-ISESession' $exportISESession $null
+Add-SubMenu $menu 'Import-ISESession' $importISESession $null
 Add-SubMenu $menu 'Remove ISEUtils' $removeMenu $null
 
 
 Export-ModuleMember -Function ("Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet","Get-File") -Alias zenCode
+
+
+$ExecutionContext.SessionState.Module.OnRemove = {
+    Unregister-Event -SourceIdentifier AutoSaveession -ErrorAction silentlycontinue
+}

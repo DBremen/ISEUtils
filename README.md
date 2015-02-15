@@ -7,6 +7,8 @@ references for zen coding
 https://github.com/madskristensen/zencoding  
 https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
 
+Automatic saving of opened files and prompt for re-opening previously saved session upon start of ISE (this is based on the ISESessionTools module from Oisin Grehan)
+
 - Get-ZenCode (PowerShell version of zen Coding based on WebEssentials VisualStudio extension version, with added functionality for pipeline input. See examples in Get-ZenCode.ps1. The function returns the expanded zen Code expression)
 - Get-ISEShortcuts (returns all built-in and AddOn shortcut key bindings)
 - Get-ISESnippet 
@@ -21,6 +23,8 @@ https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
 - AddOn Menu "FileTree" (integrated AddOn that shows a tree with folders (on first drive) that contain .ps1 and .psm1 files, clicking on a file node will open the file within ISE)
 - AddOn Menu "Add-ScriptHelp" (integrated AddOn to generate help documentation for scripts/cmdlets. The generated output is added to the ISE and can be also copied to the clipboard)
 - AddOn Menu "Open-ScriptFolder" (opens the folder that contains the current script within windows explorer)
+- AddOn Menu "Export-ISESession" (save list of currently opened scripts (excluding 'untitled') as file
+- AddOn Menu "Import-ISESession" (import previously saved session file to load session back into ISE"
 
 
 
