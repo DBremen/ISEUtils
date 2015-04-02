@@ -14,6 +14,8 @@ Automatic saving of opened files and prompt for re-opening previously saved sess
 - Get-ISESnippet 
 - Remove-ISESnippet
 - Add-ISESnippet
+- Export-SelectionToRTF (export to .rtf file)
+- Export-SelectionToHTML (export to .html file)
 - Get-File (f# based PowerShell cmdlet wrapper around Directory.GetFiles ignoring PathTooLong and AccessDenied exceptions)
 - AddOn Menu "Expand ZenCode" (Enables zen Coding within PowerShell ISE, zen Code expressions are expanded by using the AddOn menu or assigned keyboard shortcut)
 - AddOn Menu "Run Line" (execute line that contains current cursor position)
@@ -25,6 +27,9 @@ Automatic saving of opened files and prompt for re-opening previously saved sess
 - AddOn Menu "Open-ScriptFolder" (opens the folder that contains the current script within windows explorer)
 - AddOn Menu "Export-ISESession" (save list of currently opened scripts (excluding 'untitled') as file
 - AddOn Menu "Import-ISESession" (import previously saved session file to load session back into ISE"
+- AddOn Menu "Export-SelectionAsRTF"
+- AddOn Menu "Export-SelectionAsHTML"
+
 
 
 

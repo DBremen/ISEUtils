@@ -7,6 +7,8 @@
 . $PSScriptRoot\functions\Add-ISESnippet.ps1
 . $PSScriptRoot\functions\Get-ISESnippet.ps1
 . $PSScriptRoot\functions\Remove-ISESnippet.ps1
+. $PSScriptRoot\functions\Export-SelectionToRTF.ps1
+. $PSScriptRoot\functions\Export-SelectionToHTML.ps1
 
 #menu items
 
@@ -118,7 +120,7 @@ $runLine={
 }
 
 $splitSelectionByLastChar={
-    $currEditor = $psISE.CurrentFile.Editor
+    $currEditor = $psISE.CurentFile.Editor
     $currEditor.InsertText($selText.Remove($selText.LastIndexOf($splitChar),1).Split($splitChar) -join "`n")
     $selText = $currEditor.SelectedText
     $splitChar = $selText[-1]
@@ -157,9 +159,10 @@ Add-SubMenu $menu 'Open-ScriptFolder' $openScriptFolder $null
 Add-SubMenu $menu 'Export-ISESession' $exportISESession $null
 Add-SubMenu $menu 'Import-ISESession' $importISESession $null
 Add-SubMenu $menu 'Remove ISEUtils' $removeMenu $null
+Add-SubMenu $menu 'Export-SelectionToRTF' ((Get-Command Export-SelectionToRTF).ScriptBlock) $null
+Add-SubMenu $menu 'Export-SelectionToHTML' ((Get-Command Export-SelectionToHTML).ScriptBlock) $null
 
-
-Export-ModuleMember -Function ("Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet","Get-File") -Alias zenCode
+Export-ModuleMember -Function ("Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet","Get-File","Export-SelectionToHTML","Export-SelectionToRTF") -Alias zenCode
 
 
 $ExecutionContext.SessionState.Module.OnRemove = {
