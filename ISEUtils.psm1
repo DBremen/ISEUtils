@@ -15,6 +15,21 @@
 #compiled functions
 #region
 Add-Type -Path $PSScriptRoot\resources\ISEUtils.dll
+#the directorySearcher for the file tree add-on requires the FSharp Core assembly
+#which can be downloaded via 
+if (-not (Test-Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETCore\3.3.1.0\FSharp.Core.dll")){
+	$a = new-object -comobject wscript.shell
+	$answer = $a.popup("The File tree add-on requires the FShare.Core assembly to be installed on your machine do you want to do download and install it now?", `
+	0,"Download",4)
+	If ($answer -eq 6) {
+		 $webclient = New-Object Net.WebClient
+		 $url = 'http://download.microsoft.com/download/E/A/3/EA38D9B8-E00F-433F-AAB5-9CDA28BA5E7D/FSharp_Bundle.exe'
+		 $webclient.DownloadFile($url, "$pwd\FSharp_Bundle.exe")
+		 .\FSharp_Bundle.exe /install /quiet
+	} else {
+		Write-Warning "In order to use the File tree you need manually download and install the FSharp.Core tools via https://www.microsoft.com/en-us/download/details.aspx?id=44011"
+	}
+}
 ipmo $PSScriptRoot\resources\DirectorySearcher.dll
 
 
