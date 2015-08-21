@@ -135,8 +135,7 @@ $runLine={
 }
 
 $splitSelectionByLastChar={
-    $currEditor = $psISE.CurentFile.Editor
-    $currEditor.InsertText($selText.Remove($selText.LastIndexOf($splitChar),1).Split($splitChar) -join "`n")
+    $currEditor = $psISE.CurrentFile.Editor
     $selText = $currEditor.SelectedText
     $splitChar = $selText[-1]
     $currEditor.InsertText($selText.Remove($selText.LastIndexOf($splitChar),1).Split($splitChar) -join "`n")
