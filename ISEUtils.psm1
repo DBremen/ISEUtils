@@ -80,7 +80,11 @@ $ImportISESession = {
 }
 
 function Edit-ISETemplate{
-    psedit "$([Environment]::GetFolderPath('MyDocuments'))\WindowsPowerShell\ISETemplate.ps1"
+    $ISETemplatePath = "$([Environment]::GetFolderPath('MyDocuments'))\WindowsPowerShell\ISETemplate.ps1"
+    if (!Test-Path){
+        New-Item $ISETemplatePath -ItemType File
+    }
+    psedit "$ISETemplatePath"
 }
 
 Register-ObjectEvent $psise.CurrentPowerShellTab.Files CollectionChanged -Action {
