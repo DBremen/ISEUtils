@@ -79,10 +79,22 @@ $ImportISESession = {
     }
 }
 
+function Edit-ISETemplate{
+    psedit "$([Environment]::GetFolderPath('MyDocuments'))\WindowsPowerShell\ISETemplate.ps1"
+}
+
 Register-ObjectEvent $psise.CurrentPowerShellTab.Files CollectionChanged -Action {
     # files collection
     try {
         $sender | ? {-not $_.IsUntitled} | % { $_.save(); $_ } | Export-Clixml -Force $event.messagedata
+        $ISETemplate = "$([Environment]::GetFolderPath('MyDocuments'))\WindowsPowerShell\ISETemplate.ps1"
+	    if (Test-Path $ISETemplate){
+            $sender | 
+                where {$_.IsUntitled -and $_.Editor.Text.Length -eq 0 } | 
+		        foreach { 
+                    $_.Editor.Text = Get-Content $ISETemplate -Raw
+                }
+        }
     } catch {
         # convert terminating errors to non-terminating
         write-error $_
