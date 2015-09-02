@@ -46,10 +46,10 @@ $addScriptHelp ={
         $txtDescription
 "@
             if ($txtFirstParamName) {
-                $helpText+="`n`t.PARAM $txtFirstParamName`n`t`t$txtFirstParamDesc"
+                $helpText+="`n`t.PARAMETER $txtFirstParamName`n`t`t$txtFirstParamDesc"
             }
             if ($txtSecondParamName) {
-                $helpText+="`n`t.PARAM $txtSecondParamName`n`t`t$txtSecondParamDesc"
+                $helpText+="`n`t.PARAMETER $txtSecondParamName`n`t`t$txtSecondParamDesc"
             }
             if ($txtFirstExample) {
                 $helpText+="`n`t.EXAMPLE`n`t`t$txtFirstExample"

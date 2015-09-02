@@ -7,9 +7,9 @@ function Get-ZenCode{
     .DESCRIPTION
         Extension of zenCoding from WebEssentials for Visual Studio with PowerShell 
 pipeline support. Can be used to expand zenCoding expressions within PowerShell ISE
-    .Param zenCodeExpr
+    .PARAMETER zenCodeExpr
         The zenCode expression to be expanded
-    .Param InputObject
+    .PARAMETER InputObject
         Optional pipeline input to be fed into the zenCodeExpr
     .EXAMPLE
         1..3 | zenCode 'html>head>title{test}+body>ul>li{[string]$_ + " someText " + $_}' -show

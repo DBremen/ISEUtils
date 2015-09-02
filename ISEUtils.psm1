@@ -192,7 +192,7 @@ Add-SubMenu $menu 'Remove ISEUtils' $removeMenu $null
 Add-SubMenu $menu 'Export-SelectionToRTF' ((Get-Command Export-SelectionToRTF).ScriptBlock) $null
 Add-SubMenu $menu 'Export-SelectionToHTML' ((Get-Command Export-SelectionToHTML).ScriptBlock) $null
 
-Export-ModuleMember -Function ("Edit-ISETemplate","Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet","Get-File","Export-SelectionToHTML","Export-SelectionToRTF") -Alias zenCode
+Export-ModuleMember -Function ("Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet","Get-File","Export-SelectionToHTML","Export-SelectionToRTF") -Alias zenCode
 
 
 $ExecutionContext.SessionState.Module.OnRemove = {
