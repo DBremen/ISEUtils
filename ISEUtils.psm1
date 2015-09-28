@@ -32,11 +32,63 @@ if (-not (Test-Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\FShar
 }
 ipmo $PSScriptRoot\resources\DirectorySearcher.dll
 
-
-$newISEMenu = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("New-ISEMenu",[ISEUtils.NewISEMenu],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "New-ISEMenu"}).IsVisible=$true')
-$newISESnippet = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("New-ISESnippet",[ISEUtils.NewISESnippet],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "New-ISESnippet"}).IsVisible=$true')
+$newISEMenu = {
+    #check if the AddOn if loaded if yes unload and re-load it
+    $currentNameIndex = -1
+    $name = 'New-ISEMenu'
+    $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
+    if ($currentNames){
+        $currentNameIndex = $currentNames.IndexOf($name)
+        if ($currentNameIndex -ne -1){
+            $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
+        }
+    }
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+}
+$newISESnippet = {
+    #check if the AddOn if loaded if yes unload and re-load it
+    $currentNameIndex = -1
+    $name = 'New-ISESnippet'
+    $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
+    if ($currentNames){
+        $currentNameIndex = $currentNames.IndexOf($name)
+        if ($currentNameIndex -ne -1){
+            $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
+        }
+    }
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+}
+$fileTree = {
+    #check if the AddOn if loaded if yes unload and re-load it
+    $currentNameIndex = -1
+    $name = 'FileTree'
+    $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
+    if ($currentNames){
+        $currentNameIndex = $currentNames.IndexOf($name)
+        if ($currentNameIndex -ne -1){
+            $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
+        }
+    }
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+}
 $fileTree = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("FileTree",[ISEUtils.FileTree],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "FileTree"}).IsVisible=$true')
-$addScriptHelp = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("Add-ScriptHelp",[ISEUtils.AddScriptHelp],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "Add-ScriptHelp"}).IsVisible=$true')
+$addScriptHelp = {
+    #check if the AddOn if loaded if yes unload and re-load it
+    $currentNameIndex = -1
+    $name = 'Add-ScriptHelp'
+    $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
+    if ($currentNames){
+        $currentNameIndex = $currentNames.IndexOf($name)
+        if ($currentNameIndex -ne -1){
+            $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
+        }
+    }
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+}
 #endregion
 
 #inline functions 
