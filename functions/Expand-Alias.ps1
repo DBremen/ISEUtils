@@ -12,18 +12,18 @@
         })]
         $path
     )
-    $htAliases = Get-Alias | group -Property Name -AsHashTable -AsString
+    $htAliases = Get-Alias | Group-Object -Property Name -AsHashTable -AsString
     $errors = $null
     if ($PSCmdlet.ParameterSetName -eq 'Path'){
         $code = Get-Content $path -Raw
     }
     [System.Management.Automation.PSParser]::Tokenize($code, [ref]$errors) |
-        where { $_.Type -eq 'Command' } |
-        sort { $_.Start } -Descending |
-        foreach{
+        Where-Object { $_.Type -eq 'Command' } |
+        Sort-Object { $_.Start } -Descending |
+        ForEach-Object{
             $command = $_.Content
             if ($htAliases.ContainsKey($command)){
-                $alias = $htAliases."$command" | select *
+                $alias = $htAliases."$command" | Select-Object *
                 $definition = $alias.ResolvedCommandName
                 if ($PSCmdlet.ParameterSetName -eq 'Path'){
                     #replace the alias within the string

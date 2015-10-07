@@ -233,7 +233,7 @@ function Add-SubMenu($menu,$displayName,$code,$shortCut=$null){
         
 $menu = $psISE.CurrentPowerShellTab.AddOnsMenu.Submenus.Add('ISEUtils', $null, $null)
 Add-SubMenu $menu 'Expand-Alias' { Expand-Alias } 'CTRL+SHIFT+X'
-Add-SubMenu $menu 'Expand-Alias' { Find-Definition } 'F12'
+Add-SubMenu $menu 'GoTo-Definition' { Find-Definition } 'F12'
 Add-SubMenu $menu 'Expand ZenCode' $expandZenCode 'CTRL+SHIFT+J'
 Add-SubMenu $menu 'Run Line' $runLine 'F2'
 Add-SubMenu $menu 'Split Selection by last char' $splitSelectionByLastChar $null
