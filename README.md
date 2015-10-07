@@ -16,6 +16,8 @@ Automatic saving of opened files and prompt for re-opening previously saved sess
 - Add-ISESnippet
 - Export-SelectionToRTF (export to .rtf file)
 - Export-SelectionToHTML (export to .html file)
+- Expand-Alias (function that Expand aliases within files (path parameter) text or the current ISE Window)
+- Find-Definition (Finds function definition within any open ISE tab or file (provided that the function is loaded))
 - Get-File (f# based PowerShell cmdlet wrapper around Directory.GetFiles ignoring PathTooLong and AccessDenied exceptions)
 - AddOn Menu "Expand ZenCode" (Enables zen Coding within PowerShell ISE, zen Code expressions are expanded by using the AddOn menu or assigned keyboard shortcut)
 - AddOn Menu "Run Line" (execute line that contains current cursor position)
@@ -29,6 +31,8 @@ Automatic saving of opened files and prompt for re-opening previously saved sess
 - AddOn Menu "Import-ISESession" (import previously saved session file to load session back into ISE"
 - AddOn Menu "Export-SelectionAsRTF"
 - AddOn Menu "Export-SelectionAsHTML"
+- AddOn Menu "Expand-Alias"
+- AddOn Menu "GoTo-Definition"
 
 
 
