@@ -27,7 +27,7 @@
                 $definition = $alias.ResolvedCommandName
                 if ($PSCmdlet.ParameterSetName -eq 'Path'){
                     #replace the alias within the string
-                    $code = $code.Remove( $_.Start, $_.Content.Length).Insert( $_.Start, $definition)
+                    $code = $code.Remove($_.Start, $_.Content.Length).Insert( $_.Start, $definition)
                 }
                 else{
                     #replace the alias inside the ISE
