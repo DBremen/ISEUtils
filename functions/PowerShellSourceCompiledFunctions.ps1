@@ -9,7 +9,12 @@ $addScriptHelp ={
     $enclosingFunctionParamNames = -1
     foreach ($function in $functions){
         if ($function.Extent.StartLineNumber -le $lineNumber -and $function.Extent.EndLineNumber -ge $lineNumber){
-            $enclosingFunctionParamNames = $function.Parameters.Name.VariablePath.UserPath
+            if ($function.Body.ParamBlock){
+                $enclosingFunctionParamNames = $function.Body.ParamBlock.Parameters.Name.VariablePath.UserPath
+            }
+            else{
+                $enclosingFunctionParamNames = $function.Parameters.Name.VariablePath.UserPath
+            }
             break
         }
     }
