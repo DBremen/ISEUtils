@@ -1,7 +1,7 @@
 # ISEUtils
 Collection of some useful additions for the built-in PowerShell ISE
-Some functions (New-ISESnippet, New-ISEMenu) are PowerShell only integrated (making use of the VerticalAddOnToolbar Add-Ons). List of functions with short description:
-https://powershellone.wordpress.com/2015/09/28/create-an-integrated-wpf-based-ise-add-on-with-powershell/
+Some functions (New-ISESnippet, New-ISEMenu...) are PowerShell only (no C# coding in Visual Studio required) integrated (making use of the VerticalAddOnToolbar Add-Ons) (read here for more info https://powershellone.wordpress.com/2015/09/28/create-an-integrated-wpf-based-ise-add-on-with-powershell/). List of functions with short description:
+
 
 references for zen coding
 
@@ -19,6 +19,7 @@ Automatic saving of opened files and prompt for re-opening previously saved sess
 - Export-SelectionToRTF (export to .rtf file)
 - Export-SelectionToHTML (export to .html file)
 - Expand-Alias (function that Expand aliases within files (path parameter) text or the current ISE Window)
+
   https://powershellone.wordpress.com/2015/10/07/expanding-aliases-in-powershell-ise-or-any-powershell-file/
 - Find-Definition (Finds function definition within any open ISE tab or file (provided that the function is loaded))
 - Get-File (f# based PowerShell cmdlet wrapper around Directory.GetFiles ignoring PathTooLong and AccessDenied exceptions)
