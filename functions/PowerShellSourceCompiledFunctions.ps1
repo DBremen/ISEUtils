@@ -34,6 +34,7 @@ $addScriptHelp ={
             }
         }
         else{
+            New-TextBlock -FontSize 17 -Margin "24 2 0 3" -FontWeight Bold -Text "1. Param"
             New-TextBox -Margin "7, 5, 7, 5" -Name "txtFirstParamName"
             New-TextBlock -FontSize 17 -Margin "24 2 0 3" -FontWeight Bold -Text "1. Param Description" 
             New-TextBox -Margin "7, 5, 7, 5" -Name "txtFirstParamDesc"

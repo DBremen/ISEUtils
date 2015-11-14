@@ -1,5 +1,5 @@
 ﻿#https://github.com/madskristensen/zencoding
-#https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
+#https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdf
 function Get-ZenCode{
        <#    
     .SYNOPSIS
@@ -17,7 +17,7 @@ pipeline support. Can be used to expand zenCoding expressions within PowerShell 
         gps | zenCode 'html>head>title+body>table>tr>th{name}+th{ID}^(tr>td{$_.name}+td{$_.id})' -show
     .LINK
         https://github.com/madskristensen/zencoding
-        https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
+        https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdf
     .NOTES 
         CREATED:  (Get-Date).ToShortDateString()
         AUTHOR      :  Dirk

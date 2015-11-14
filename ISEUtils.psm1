@@ -35,7 +35,7 @@ if (-not (Test-Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\FShar
 ipmo $PSScriptRoot\resources\DirectorySearcher.dll
 
 $newISEMenu = {
-    #check if the AddOn if loaded if yes unload and re-load it
+    #check if the AddOn is loaded if yes unload and re-load it
     $currentNameIndex = -1
     $name = 'New-ISEMenu'
     $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
@@ -45,11 +45,11 @@ $newISEMenu = {
             $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
         }
     }
-    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.NewISEMenu],$true)
     ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
 }
 $newISESnippet = {
-    #check if the AddOn if loaded if yes unload and re-load it
+    #check if the AddOn is loaded if yes unload and re-load it
     $currentNameIndex = -1
     $name = 'New-ISESnippet'
     $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
@@ -59,11 +59,11 @@ $newISESnippet = {
             $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
         }
     }
-    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.NewISESnippet],$true)
     ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
 }
 $fileTree = {
-    #check if the AddOn if loaded if yes unload and re-load it
+    #check if the AddOn is loaded if yes unload and re-load it
     $currentNameIndex = -1
     $name = 'FileTree'
     $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
@@ -73,12 +73,11 @@ $fileTree = {
             $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
         }
     }
-    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.FileTree],$true)
     ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
 }
-$fileTree = [scriptblock]::Create('$psISE.CurrentPowerShellTab.VerticalAddOnTools.Add("FileTree",[ISEUtils.FileTree],$true);($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq "FileTree"}).IsVisible=$true')
 $addScriptHelp = {
-    #check if the AddOn if loaded if yes unload and re-load it
+    #check if the AddOn is loaded if yes unload and re-load it
     $currentNameIndex = -1
     $name = 'Add-ScriptHelp'
     $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
@@ -135,7 +134,7 @@ $ImportISESession = {
 
 function Edit-ISETemplate{
     $ISETemplatePath = "$([Environment]::GetFolderPath('MyDocuments'))\WindowsPowerShell\ISETemplate.ps1"
-    if (!Test-Path){
+    if (!(Test-Path $ISETemplatePath)){
         New-Item $ISETemplatePath -ItemType File
     }
     psedit "$ISETemplatePath"
@@ -248,7 +247,7 @@ Add-SubMenu $menu 'Remove ISEUtils' $removeMenu $null
 Add-SubMenu $menu 'Export-SelectionToRTF' ((Get-Command Export-SelectionToRTF).ScriptBlock) $null
 Add-SubMenu $menu 'Export-SelectionToHTML' ((Get-Command Export-SelectionToHTML).ScriptBlock) $null
 
-Export-ModuleMember -Function ("Find-Definition","Expand-Alias","Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet","Get-File","Export-SelectionToHTML","Export-SelectionToRTF") -Alias zenCode
+Export-ModuleMember -Function ("Find-Definition","Expand-Alias","Get-ZenCode","Get-ISEShortCuts","Get-ISESnippet","Remove-ISESnippet","Add-ISESnippet","Get-File","Export-SelectionToHTML","Export-SelectionToRTF", "Edit-ISETemplate") -Alias zenCode
 
 
 $ExecutionContext.SessionState.Module.OnRemove = {
