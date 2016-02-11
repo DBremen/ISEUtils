@@ -109,8 +109,8 @@ $addScriptHelp ={
             }
         $helpText+="`n" + @"
     .NOTES 
-        CREATED:  $((Get-Date).ToShortDateString())
-        AUTHOR      :  $env:USERNAME
+        CREATED: $((Get-Date).ToShortDateString())
+        AUTHOR:  $env:USERNAME
 	    Changelog:    
 	        ----------------------------------------------------------------------------------                                           
 	        Name          Date         Description        
@@ -381,6 +381,12 @@ $newISESnippet={
             [String]
             $Author,
 
+            [String]
+            $ShortCut,
+
+            [String]
+            $HighlightText,
+
             [Int32]
             [ValidateRange(0, [Int32]::MaxValue)]
             $CaretOffset = 0,
@@ -413,6 +419,8 @@ $newISESnippet={
                 <Title>$([System.Security.SecurityElement]::Escape($Title))</Title>
                 <Description>$([System.Security.SecurityElement]::Escape($Description))</Description>
                 <Author>$([System.Security.SecurityElement]::Escape($Author))</Author>
+                <Shortcut>$([System.Security.SecurityElement]::Escape($ShortCut))</Shortcut>
+                <HighlightText>$([System.Security.SecurityElement]::Escape($HighlightText))</HighlightText>
                 <SnippetTypes>
                     <SnippetType>Expansion</SnippetType>
                 </SnippetTypes>
@@ -426,7 +434,6 @@ $newISESnippet={
 
     </Snippet>
 </Snippets>
-
 "@
 
             $pathCharacters = '/\`*?[]:><"|.';
@@ -462,10 +469,14 @@ $newISESnippet={
         }
     }
 
-    New-Grid -AllowDrop:$true -Name "addon" -columns Auto, * -rows Auto,Auto,Auto,*,Auto,Auto,Auto -Margin 5 {
+    New-Grid -AllowDrop:$true -Name "addon" -columns Auto, * -rows Auto,Auto,Auto,Auto,Auto,*,Auto,Auto,Auto -Margin 5 {
         New-TextBox -Name Warning -Foreground Red -FontWeight Bold -Margin 5 -Column 1  -TextWrapping Wrap -IsReadOnly -Visibility Hidden
         ($txtTitle = New-TextBox -Name txtTitle -Column 1 -Row ($Row=1) -Margin 5 -FontSize 16)
         New-Label "_Title*" -Target $txtTitle -Row $Row -FontWeight ([System.Windows.FontWeights]::Bold)
+        ($txtShortcut = New-TextBox -Name txtShortCut -Column 1 -Row ($Row+=1) -Margin 5 -FontSize 16)
+        New-Label "_Shortcut" -Target $txtShortcut -Row $Row -FontWeight ([System.Windows.FontWeights]::Bold)
+        ($txtHighlightText = New-TextBox -Name txtHighlightText -Column 1 -Row ($Row+=1) -Margin 5 -FontSize 16)
+        New-Label "_HighlightText" -Target $txtHighlightText -Row $Row -FontWeight ([System.Windows.FontWeights]::Bold)
         ($txtDescription = New-TextBox -Name txtDescription -Column 1 -Row ($Row+=1) -Margin 5 -FontSize 16)
         New-Label "_Description*" -Row $Row -Target $txtDescription -FontWeight ([System.Windows.FontWeights]::Bold) 
         ($txtCode = New-TextBox -Name txtCode -Margin 5 -Column 1 -FontSize 16 -Row ($Row+=1) -MinHeight 141 `
@@ -519,7 +530,7 @@ $newISESnippet={
         New-CheckBox "_Force overwrite" -Name chkForce -Row ($Row+=1) -Visibility Hidden
         New-StackPanel -Orientation Horizontal  -Column 1 -Row ($Row+=1) -HorizontalAlignment Right -Margin 5 {
             New-Button "_Save" -Name btnSave -Width 75 -Margin "0,0,5,0" -IsDefault -On_Click {
-                foreach($name in ('txtTitle','txtDescription','txtCode','txtCaretOffset','txtAuthor','Warning','chkForce')){
+                foreach($name in ('txtTitle','txtDescription','txtCode','txtCaretOffset','txtHighlightText', 'txtShortcut','txtAuthor','Warning','chkForce')){
                     New-Variable $name -Value ($this.Parent.Parent.Children | where {$_.Name -eq $name})
                 }
                 if ($txtTitle.Text.Trim() -eq "" -or $txtDescription.Text.Trim() -eq "" -or $txtCode.Text.Trim() -eq ""){
@@ -537,7 +548,12 @@ $newISESnippet={
                 if ($txtAuthor.Text.Trim() -ne ""){
                     $htParams.Add('Author',$txtAuthor.Text)
                 }
-               
+                if ($txtShortcut.Text.Trim() -ne ""){
+                    $htParams.Add('Shortcut',$txtShortcut.Text)
+                }
+                if ($txtHighlightText.Text.Trim() -ne ""){
+                    $htParams.Add('HighlightText',$txtHighlightText.Text)
+                }
                 try {
                     New-IseSnippet @htParams -Title $txtTitle.Text -Text $code -description $txtDescription.Text 
                     $warning.Visibility = "Visible"

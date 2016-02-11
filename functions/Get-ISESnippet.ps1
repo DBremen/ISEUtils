@@ -15,6 +15,7 @@
         $snippetXML | 
             select @{n='Version'; e={$_.Snippets.Snippet.Version}}, @{n='Description';e={$_.Snippets.Snippet.Header.Description}},`
                 @{n='Title';e={$_.Snippets.Snippet.Header.Title}}, @{n='Author';e={$_.Header.Snippets.Snippet.Author}},`
+                @{n='Shortcut';e={$_.Snippets.Snippet.Header.Shortcut}},`
                 @{n='Language';e={$_.Snippets.Snippet.Code.Script.Language}}, @{n='CaretOffset';e={$_.Snippets.Snippet.Code.Script.CaretOffset}},`
                 @{n='Code';e={$_.Snippets.Snippet.Code.Script.'#cdata-section'}}, @{n='Path'; e={$snippetFile.FullName}}       
     }

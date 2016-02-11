@@ -26,10 +26,8 @@ if (-not (Test-Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\FShar
 	If ($answer -eq 6) {
 		 $webclient = New-Object Net.WebClient
 		 $url = 'http://download.microsoft.com/download/E/A/3/EA38D9B8-E00F-433F-AAB5-9CDA28BA5E7D/FSharp_Bundle.exe'
-         $path = "$env:TEMP\FSharp_Bundle.exe"
-		 $webclient.DownloadFile($url, $path)
-         $arguments = '/install /quiet'
-         Start-Process $path $arguments -Wait
+		 $webclient.DownloadFile($url, "$pwd\FSharp_Bundle.exe")
+		 .\FSharp_Bundle.exe /install /quiet
 	} else {
 		Write-Warning "In order to use the File tree you need manually download and install the FSharp.Core tools via https://www.microsoft.com/en-us/download/details.aspx?id=44011"
 	}
@@ -143,13 +141,66 @@ function Edit-ISETemplate{
 }
 
 
+$autoCompleteAction = {
+    function Get-Position($text, $index){
+        $pos = 0
+        $numRows = $text.Count
+        for ($rowIndex = 1; $rowIndex -lt $numRows + 1; $rowIndex++){
+            $numCols = $text[$rowIndex-1].Length
+            if ($numCols + $pos -lt $index){
+                $pos += $numCols
+            }
+            else{
+                for ($colIndex = 1; $colIndex -lt $numCols + 1; $colIndex++){
+                    $pos++
+                    if ($pos -eq $index) { 
+                    return ($rowIndex, $colIndex) 
+                    }
+                }
+            }
+        }
+    }
+    if($event.SourceEventArgs.PropertyName -eq "CaretColumn"){ 
+        $endIndex = $sender.CaretColumn - 1
+        $wordBeforeCaret = $sender.CaretLineText[0..$endIndex] -join ''
+        if ($wordBeforeCaret -like ' * '){
+            $wordBeforeCaret = [Regex]::Match($wordBeforeCaret,' .*$').Value.Trim()
+        }
+        $currLine = $sender.CaretLineText.Trim()
+        $snippet = Get-IseSnippet | where {$_.Shortcut -eq $wordBeforeCaret}
+        if ($snippet){
+           
+            #$sender.SetCaretPosition($sender.CaretLine, $sender.CaretColumn - $wordBeforeCaret.Length)
+            $sender.Select($sender.CaretLine,  $sender.CaretColumn - $wordBeforeCaret.Length, $sender.CaretLine, $sender.CaretColumn)
+            $sender.InsertText($snippet.Code)
+            $codeLines = $snippet.Code.Split("`n")
+            <#
+            $newColumn = $codeLines[-1].Length + 1
+            $lineOffset = $codeLines.Count -1
+            $sender.SetCaretPosition(($sender.CaretLine + $lineOffset),$newColumn)
+            #>
+            $row, $col = Get-Position $codeLines $snippet.CaretOffset
+            $sender.SetCaretPosition($sender.CaretLine + $row, $col)
+        }
+    }
+}
 
 
-$MessageData = New-Object PSObject -Property @{defaultSessionFile = $defaultSessionFile}
+#register event for all existing open files
+foreach ($file in $psise.CurrentPowerShellTab.Files){
+    $id = 'AutoComplete' + (Get-Random)
+    $null = Register-ObjectEvent $file.Editor PropertyChanged -Action $autoCompleteAction -SourceIdentifier $id
+}
+
+$MessageData = New-Object PSObject -Property @{autoCompleteAction = $autoCompleteAction; defaultSessionFile = $defaultSessionFile}
 Register-ObjectEvent $psise.CurrentPowerShellTab.Files CollectionChanged -Action {
     # files collection
     try {
         $sender | ? {-not $_.IsUntitled} | % { $_.save(); $_ } | Export-Clixml -Force $event.MessageData.defaultSessionFile
+        #AutoCompletion
+        $id = 'AutoComplete' + (Get-Random)
+        $action = $event.MessageData.autoCompleteAction
+        $null = Register-ObjectEvent @($sender)[-1].Editor PropertyChanged -Action $action -SourceIdentifier $id
         #default template
         $ISETemplate = "$([Environment]::GetFolderPath('MyDocuments'))\WindowsPowerShell\ISETemplate.ps1"
 	    if (Test-Path $ISETemplate){
