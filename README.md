@@ -38,6 +38,7 @@ Automatic saving of opened files and prompt for re-opening previously saved sess
 - AddOn Menu "Export-SelectionAsHTML"
 - AddOn Menu "Expand-Alias"
 - AddOn Menu "GoTo-Definition"
+- AddOn Menu "Spell check selection"
 
 
 
