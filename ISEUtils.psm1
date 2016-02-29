@@ -92,6 +92,23 @@ $addScriptHelp = {
     $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
     ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
 }
+
+$spellCheck = {
+    #check if the AddOn is loaded if yes unload and re-load it
+    $currentNameIndex = -1
+    $name = 'SpellCheck'
+    $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
+    if ($currentNames){
+        $currentNameIndex = $currentNames.IndexOf($name)
+        if ($currentNameIndex -ne -1){
+            $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
+        }
+    }
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.SpellCheck],$true)
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+}
+
+
 #endregion
 
 #inline functions 
@@ -252,6 +269,7 @@ Add-SubMenu $menu 'Open-ScriptFolder' $openScriptFolder $null
 Add-SubMenu $menu 'Export-ISESession' $exportISESession $null
 Add-SubMenu $menu 'Import-ISESession' $importISESession $null
 Add-SubMenu $menu 'Remove ISEUtils' $removeMenu $null
+Add-SubMenu $menu 'Spell check selection' $spellCheck 'F7'
 Add-SubMenu $menu 'Export-SelectionToRTF' ((Get-Command Export-SelectionToRTF).ScriptBlock) $null
 Add-SubMenu $menu 'Export-SelectionToHTML' ((Get-Command Export-SelectionToHTML).ScriptBlock) $null
 

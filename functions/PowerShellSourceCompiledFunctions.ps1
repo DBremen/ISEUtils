@@ -579,12 +579,39 @@ $newISESnippet={
     } 
 }
 
+$spellCheck={
+     New-DockPanel {
+        New-Button 'Auto-Correct (use first spelling suggestion)' -Dock Bottom -On_Click{
+            $txtBox = $this.Parent.Children | where {$_.Name -eq 'txtBox'}
+            $startIndex = 0
+            $errorIndex = $txtBox.GetNextSpellingErrorCharacterIndex($startIndex, [System.Windows.Documents.LogicalDirection]::Forward)
+            while ($errorIndex -ne -1){
+                $startIndex = $errorIndex
+                $error = $txtBox.GetSpellingError($errorIndex)
+                $suggestion = @($error.suggestions)[0]
+                if ($suggestion){
+                    $error.Correct($suggestion)
+                }
+                $errorIndex = $txtBox.GetNextSpellingErrorCharacterIndex($startIndex, [System.Windows.Documents.LogicalDirection]::Forward)
+                if ($errorIndex -eq $startIndex){
+                    $errorIndex = $txtBox.Text.IndexOf(' ',$startIndex) + 1
+                }
+            }
+        }
+        New-TextBox -Language 'en-us' -Dock Top -TextWrapping Wrap -VerticalAlignment Stretch -HorizontalAlignment Stretch -Name txtBox  -FontSize 15 -AcceptsReturn -On_Loaded {                       
+            $this.Text = $psise.CurrentPowerShellTab.Files.SelectedFile.Editor.SelectedText           
+            $this.SpellCheck.IsEnabled = $true          
+        }
+    }
+}
+
+
 #to create the dll for the Add-on
 
 $dllPath = "$(Split-Path $PSScriptRoot -Parent)\resources\ISEUtils.dll"
-$classes = "NewISEMenu","NewISESnippet","FileTree","AddScriptHelp"
+$classes = "NewISEMenu","NewISESnippet","FileTree","AddScriptHelp","SpellCheck"
 $namespace = "ISEUtils"
-ConvertTo-ISEAddOn -ScriptBlock ($newISEMenu,$newISESnippet,$fileTree,$addScriptHelp) -NameSpace $namespace -DLLPath $dllPath -class $classes
+ConvertTo-ISEAddOn -ScriptBlock ($newISEMenu,$newISESnippet,$fileTree,$addScriptHelp,$spellCheck) -NameSpace $namespace -DLLPath $dllPath -class $classes
 
 
 #paramters for ConvertTo-ISEAddOn to generate add-on dynamically (for testing purpose)
