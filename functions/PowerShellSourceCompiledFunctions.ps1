@@ -605,14 +605,59 @@ $spellCheck={
     }
 }
 
+$markDown={
+    $script:timer = New-Object System.Windows.Forms.Timer
+    $timer.Interval = 1000
+    $script:prevTxt = ''
+    New-DockPanel {
+        New-WebBrowser -Name browser -Dock Top -VerticalAlignment Stretch -HorizontalAlignment Stretch  -On_Loaded {    
+            $timer.Start()   
+            $browser = $this
+            $timer.add_tick(
+                { 
+                    $txt = $psise.CurrentPowerShellTab.Files.SelectedFile.Editor.Text
+                    if ($txt -ne $prevTxt){
+                        $prevTxt = $txt
+                        $lines =  $txt.Split("`r`n")
+                        $sb = New-Object System.Text.StringBuilder
+                        $markdownify = New-Object Strike.IE.Markdownify
+                        foreach ($line in $lines) { 
+                            $null = $sb.Append($markdownify.Transform($line))
+                        }
+                        #$text | set-content -path C:\Users\dirk_bremen\Desktop\test.txt
+                        $browser.NavigateToString("<HTML>$($sb.ToString())")
+                    }
+             })             
+            $lines =  $psise.CurrentPowerShellTab.Files.SelectedFile.Editor.Text.Split("`r`n")
+            $sb = New-Object System.Text.StringBuilder
+            $markdownify = New-Object Strike.IE.Markdownify
+            foreach ($line in $lines) { 
+                $null = $sb.Append($markdownify.Transform($line))
+                $null = $sb.Append('<br>')
+            }
+            #$text | set-content -path C:\Users\dirk_bremen\Desktop\test.txt
+            $this.NavigateToString("<HTML>$($sb.ToString())")
+        }
+    }  
+}
 
+<#
+
+$test = add-type -Path C:\Users\dirk_bremen\Desktop\CommonMark.NET.0.12.0\lib\net45\CommonMark.dll -PassThru
+[CommonMark.CommonMarkConverter]::Convert("**Hello world!**")
+#>
 #to create the dll for the Add-on
 
 $dllPath = "$(Split-Path $PSScriptRoot -Parent)\resources\ISEUtils.dll"
-$classes = "NewISEMenu","NewISESnippet","FileTree","AddScriptHelp","SpellCheck"
+$classes = "NewISEMenu","NewISESnippet","FileTree","AddScriptHelp","SpellCheck","MarkDownEditor"
 $namespace = "ISEUtils"
-ConvertTo-ISEAddOn -ScriptBlock ($newISEMenu,$newISESnippet,$fileTree,$addScriptHelp,$spellCheck) -NameSpace $namespace -DLLPath $dllPath -class $classes
+ConvertTo-ISEAddOn -ScriptBlock ($newISEMenu,$newISESnippet,$fileTree,$addScriptHelp,$spellCheck,$markdown) -NameSpace $namespace -DLLPath $dllPath -class $classes
 
+<#
+Register-ObjectEvent -InputObject $psISE.CurrentFile.Editor -EventName PropertyChanged -Action { 
+    $sender.Text | set-content "$env:TEMP\ISEUtils_CurrEditorText.txt"
+} -sourceidentifier EditorTextChanged | Out-Null
+#>
 
 #paramters for ConvertTo-ISEAddOn to generate add-on dynamically (for testing purpose)
-#ConvertTo-ISEAddOn -ScriptBlock $newISEMenu -AddVertically -Visible -DisplayName "MyISE-Add-On$num" -addMenu
+#ConvertTo-ISEAddOn -ScriptBlock $fileTree -AddVertically -Visible -DisplayName "MyISE-Add-On$num" -addMenu

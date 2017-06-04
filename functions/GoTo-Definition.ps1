@@ -1,7 +1,8 @@
 ﻿function Find-DefinitionInEditor {
+    [CmdletBinding()]
     param(
-        $file = $psISE.CurrentFile, 
-        $tab = $psISE.CurrentPowerShellTab
+        $File = $psISE.CurrentFile, 
+        $Tab = $psISE.CurrentPowerShellTab
     )
     $found = $false
     $editor = $file.Editor
@@ -18,7 +19,7 @@
                 ($ast.Extent.EndLineNumber -eq $Line -and $ast.Extent.EndColumnNumber -ge $Column))
 
             }, $true
-    ) | select -ExpandProperty CommandElements | foreach {  
+    ) | Select-Object -ExpandProperty CommandElements | ForEach-Object {  
         $name = $_.Value  
         $AST = [Management.Automation.Language.Parser]::ParseInput($editor.Text,[ref]$null,[ref]$null)
         $definition = $AST.Find(
@@ -27,7 +28,7 @@
                 ($ast -is [System.Management.Automation.Language.FunctionDefinitionAst]) -and
                 ($ast.Name -eq $name)
             }, $true
-        ) | select -Last 1 
+        ) | Select-Object -Last 1 
         if ($definition){ 
             $psISE.PowerShellTabs.SelectedPowerShellTab = $tab
             $psISE.PowerShellTabs.SelectedPowerShellTab.Files.SelectedFile = $file
@@ -39,17 +40,21 @@
 }
 
 function Find-Definition{
-    <#
-    check in current file. Result is an array of:
-     - a boolean that indicates whether the definition was found and 
-     - a string that contains the function name 
-    #>
+ <#    
+    .SYNOPSIS
+        Jump to to the definition of the function that the cursor is currently placed at or inside. Searches through all open tabs within ISE.
+    .DESCRIPTION
+        Utilizes AST to find and go to the definition of the function that the cursor is currently placed within ISE.
+    .EXAMPLE
+        #Go to to the definition of the function that the cursor is currently placed at/inside
+        Find-Definition
+#>
     $result = Find-DefinitionInEditor
     if (-not $result[0]){
         #check in all other open tabs and files
         foreach ($tab in $psISE.PowerShellTabs){
             #skip the current file
-            $files = $tab.Files | where { $_.FullPath -ne $psISE.CurrentFile.FullPath }
+            $files = $tab.Files | Where-Object { $_.FullPath -ne $psISE.CurrentFile.FullPath }
             foreach ($file in $files){
                 $result = Find-DefinitionInEditor $file $tab
                 if ($result[0]) {

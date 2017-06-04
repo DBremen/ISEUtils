@@ -1,24 +1,20 @@
 ﻿if ($host.Name -ne 'Windows PowerShell ISE Host'){
-    Write-Warning "This Module can be only installed from within ISE"
+    Write-Warning "This Module can be only run from within ISE"
     exit
 }
-. $PSScriptRoot\functions\Get-ZenCode.ps1
-. $PSScriptRoot\functions\Get-ISEShortcuts.ps1
-. $PSScriptRoot\functions\Add-ISESnippet.ps1
-. $PSScriptRoot\functions\Get-ISESnippet.ps1
-. $PSScriptRoot\functions\Remove-ISESnippet.ps1
-. $PSScriptRoot\functions\Export-SelectionToRTF.ps1
-. $PSScriptRoot\functions\Export-SelectionToHTML.ps1
-. $PSScriptRoot\functions\Expand-Alias.ps1
-. $PSScriptRoot\functions\GoTo-Definition.ps1
+
+#load libraries and functions
+Add-Type -Path "$PSScriptRoot\resources\CommonMark.dll"
+Add-Type -Path "$PSScriptRoot\resources\Strike.IE.dll"
+Get-ChildItem $psscriptroot\functions\*.ps1 | ForEach-Object { 
+	#write-host $_.FullName
+	. $_.FullName 
+}
 
 #menu items
-
 #compiled functions
 #region
 Add-Type -Path $PSScriptRoot\resources\ISEUtils.dll
-#the directorySearcher for the file tree add-on requires the FSharp Core assembly
-#which can be downloaded via 
 if (-not (Test-Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETCore\3.3.1.0\FSharp.Core.dll")){
 	$a = new-object -comobject wscript.shell
 	$answer = $a.popup("The File tree add-on requires the FShare.Core assembly to be installed on your machine do you want to do download and install it now?", `
@@ -34,7 +30,7 @@ if (-not (Test-Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\FShar
 		Write-Warning "In order to use the File tree you need manually download and install the FSharp.Core tools via https://www.microsoft.com/en-us/download/details.aspx?id=44011"
 	}
 }
-ipmo $PSScriptRoot\resources\DirectorySearcher.dll
+Import-Module $PSScriptRoot\resources\DirectorySearcher.dll
 
 $newISEMenu = {
     #check if the AddOn is loaded if yes unload and re-load it
@@ -48,7 +44,7 @@ $newISEMenu = {
         }
     }
     $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.NewISEMenu],$true)
-    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | Where-Object {$_.Name -eq $name}).IsVisible=$true
 }
 $newISESnippet = {
     #check if the AddOn is loaded if yes unload and re-load it
@@ -62,7 +58,7 @@ $newISESnippet = {
         }
     }
     $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.NewISESnippet],$true)
-    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | Where-Object {$_.Name -eq $name}).IsVisible=$true
 }
 $fileTree = {
     #check if the AddOn is loaded if yes unload and re-load it
@@ -76,7 +72,7 @@ $fileTree = {
         }
     }
     $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.FileTree],$true)
-    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | Where-Object {$_.Name -eq $name}).IsVisible=$true
 }
 $addScriptHelp = {
     #check if the AddOn is loaded if yes unload and re-load it
@@ -90,7 +86,7 @@ $addScriptHelp = {
         }
     }
     $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.AddScriptHelp],$true)
-    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | Where-Object {$_.Name -eq $name}).IsVisible=$true
 }
 
 $spellCheck = {
@@ -105,7 +101,21 @@ $spellCheck = {
         }
     }
     $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.SpellCheck],$true)
-    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | where {$_.Name -eq $name}).IsVisible=$true
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | Where-Object {$_.Name -eq $name}).IsVisible=$true
+}
+$markDown = {
+    #check if the AddOn is loaded if yes unload and re-load it
+    $currentNameIndex = -1
+    $name = 'Markdown Editor'
+    $currentNames = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Name
+    if ($currentNames){
+        $currentNameIndex = $currentNames.IndexOf($name)
+        if ($currentNameIndex -ne -1){
+            $psISE.CurrentPowerShellTab.VerticalAddOnTools.RemoveAt($currentNameIndex)
+        }
+    }
+    $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add($name,[ISEUtils.MarkDownEditor],$true)
+    ($psISE.CurrentPowerShellTab.VerticalAddOnTools | Where-Object {$_.Name -eq $name}).IsVisible=$true
 }
 
 
@@ -131,7 +141,7 @@ $exportISESession = {
     $SaveFileDialog.InitialDirectory = (Split-Path $profile)
     $SaveFileDialog.Filter = "All files (PowerShell session file)| *.session.clixml"
     if ($SaveFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
-        $sessionFile = $SaveFileDialog.FileName        $psise.CurrentPowerShellTab.files | ? { -not $_.IsUntitled } | % {
+        $sessionFile = $SaveFileDialog.FileName        $psise.CurrentPowerShellTab.files | Where-Object { -not $_.IsUntitled } | ForEach-Object {
             $_.save(); $_ } | Export-Clixml -Force $sessionFile
     } 
 }
@@ -143,7 +153,7 @@ $ImportISESession = {
     $openFileDialog.Filter = "All files (PowerShell session file)| *.session.clixml"
     if ($openFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
         $sesionFile = $openFileDialog.FileName
-        import-clixml $sessionFile | % {
+        import-clixml $sessionFile | ForEach-Object {
             try {
                 $psise.CurrentPowerShellTab.files.Add($_.fullpath)
             } catch { write-error $_ }
@@ -166,13 +176,13 @@ $MessageData = New-Object PSObject -Property @{defaultSessionFile = $defaultSess
 Register-ObjectEvent $psise.CurrentPowerShellTab.Files CollectionChanged -Action {
     # files collection
     try {
-        $sender | ? {-not $_.IsUntitled} | % { $_.save(); $_ } | Export-Clixml -Force $event.MessageData.defaultSessionFile
+        $sender | Where-Object {-not $_.IsUntitled} | ForEach-Object { $_.save(); $_ } | Export-Clixml -Force $event.MessageData.defaultSessionFile
         #default template
         $ISETemplate = "$([Environment]::GetFolderPath('MyDocuments'))\WindowsPowerShell\ISETemplate.ps1"
 	    if (Test-Path $ISETemplate){
             $sender | 
-                where {$_.IsUntitled -and $_.Editor.Text.Length -eq 0 } | 
-		        foreach { 
+                Where-Object {$_.IsUntitled -and $_.Editor.Text.Length -eq 0 } | 
+		        ForEach-Object { 
                     $_.Editor.Text = Get-Content $ISETemplate -Raw
                 }
         }
@@ -189,13 +199,13 @@ if ((test-path $defaultSessionFile)) {
     # only load if we've got something to load       
     if ($files.count -gt 0) {
         # just show first two of the last files in the session as a reminder
-        $hint = ($files|select -first 2 -expand displayname) -join ","
+        $hint = ($files|Select-Object -first 2 -expand displayname) -join ","
             
         # default to YES
         if ($host.ui.PromptForChoice("Session Restore",
             ("Load last session of {0} file(s) into current tab?`n`nHint: {1}, ..." -f $files.count, $hint),
             [Management.Automation.Host.ChoiceDescription[]]@("&Yes", "&No"), 0) -eq 0) {
-            Import-CliXML $defaultSessionFile | % {
+            Import-CliXML $defaultSessionFile | ForEach-Object {
                 try {
                     $psise.CurrentPowerShellTab.files.Add($_.fullpath)
                 } catch { write-error $_ }
@@ -216,7 +226,7 @@ $expandZenCode = {
         $txt = $sb.Invoke()
     }
     else{
-        $txt = (zenCode $line)
+        $txt = (Get-ZenCode $line)
     }
 
     $offset = " " * $col 
@@ -236,7 +246,7 @@ $splitSelectionByLastChar={
 }
 
 $removeMenu = {
-    $menu = $psISE.CurrentPowerShellTab.AddOnsMenu.Submenus | where DisplayName -eq 'ISEUtils'
+    $menu = $psISE.CurrentPowerShellTab.AddOnsMenu.Submenus | Where-Object DisplayName -eq 'ISEUtils'
     [void]$psISE.CurrentPowerShellTab.AddOnsMenu.Submenus.Remove($menu)
     [Microsoft.VisualBasic.Interaction]::Msgbox('To completly remove ISEUtils you will also need to delete the entry from your profile',"Exclamation","")
 }
@@ -270,6 +280,7 @@ Add-SubMenu $menu 'Export-ISESession' $exportISESession $null
 Add-SubMenu $menu 'Import-ISESession' $importISESession $null
 Add-SubMenu $menu 'Remove ISEUtils' $removeMenu $null
 Add-SubMenu $menu 'Spell check selection' $spellCheck 'F7'
+Add-SubMenu $menu 'Markdown Editor' $markDown
 Add-SubMenu $menu 'Export-SelectionToRTF' ((Get-Command Export-SelectionToRTF).ScriptBlock) $null
 Add-SubMenu $menu 'Export-SelectionToHTML' ((Get-Command Export-SelectionToHTML).ScriptBlock) $null
 
@@ -278,5 +289,5 @@ Export-ModuleMember -Function ("Find-Definition","Expand-Alias","Get-ZenCode","G
 
 $ExecutionContext.SessionState.Module.OnRemove = {
     Unregister-Event -SourceIdentifier AutoSaveession -ErrorAction silentlycontinue
-    Get-EventSubScriber | where {$_.SourceIdentifier -like 'AutoComplete*'} | Unregister-Event
+    Get-EventSubScriber | Where-Object {$_.SourceIdentifier -like 'AutoComplete*'} | Unregister-Event
 }

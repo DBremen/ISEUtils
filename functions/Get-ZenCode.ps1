@@ -1,34 +1,31 @@
-﻿#https://github.com/madskristensen/zencoding
-#https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdf
-function Get-ZenCode{
-       <#    
+﻿function Get-ZenCode{
+<#    
     .SYNOPSIS
-        zen Coding with PowerShell
+        Zen Coding for PowerShell
     .DESCRIPTION
         Extension of zenCoding from WebEssentials for Visual Studio with PowerShell 
-pipeline support. Can be used to expand zenCoding expressions within PowerShell ISE
-    .PARAMETER zenCodeExpr
+        pipeline support. Can be used to expand zenCoding expressions within PowerShell ISE
+        First of all let’s clarify what Zen Coding actually is. According to their website: Emmet (formerly known as Zen Coding) is
+        a web-developer’s toolkit that can greatly improve your HTML & CSS workflow.
+        But what does this have to do with PowerShell? At least I find myself quite often trying to convert PowerShell output into HTML 
+        or even using the text manipulation capabilities of PowerShell to dynamically construct some static web content. 
+        Yes, I hear you shouting already isn’t that why we have ConvertTo-HTML and Here-Strings? 
+        Granted that those can make the job already pretty easy, 
+        but there is still an even better way to (dynamically) generate static HTML pages from within PowerShell. 
+    .PARAMETER ZenCodeExpression
         The zenCode expression to be expanded
     .PARAMETER InputObject
-        Optional pipeline input to be fed into the zenCodeExpr
+        Optional pipeline input to be fed into the ZenCodeExpression
     .EXAMPLE
         1..3 | zenCode 'html>head>title{test}+body>ul>li{[string]$_ + " someText " + $_}' -show
     .EXAMPLE
         gps | zenCode 'html>head>title+body>table>tr>th{name}+th{ID}^(tr>td{$_.name}+td{$_.id})' -show
     .LINK
+        https://powershellone.wordpress.com/2015/11/09/zen-coding-for-the-powershell-console-and-ise/
+    .LINK
         https://github.com/madskristensen/zencoding
+    .LINK
         https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdf
-    .NOTES 
-        CREATED:  (Get-Date).ToShortDateString()
-        AUTHOR      :  Dirk
-        Tags<>:     :
-	    Changelog:    
-	      -----------------------------------------------------------------------------
-                                           
-	      Name          Date         Description        
-	      -----------------------------------------------------------------------------
-
-	      -----------------------------------------------------------------------------
     #>
     [Alias("zenCode")]
     [CmdletBinding()]
@@ -36,7 +33,7 @@ pipeline support. Can be used to expand zenCoding expressions within PowerShell 
     (
         [Parameter(Mandatory=$true,
                    Position=0)]
-        $zenCodeExpr,
+        $ZenCodeExpression,
         [Parameter(ValueFromPipeline=$true,
                    Position=1)]
         $InputObject,
@@ -54,42 +51,42 @@ pipeline support. Can be used to expand zenCoding expressions within PowerShell 
     Add-Type -AssemblyName System.Web
     $allData = @($Input)
     if ($allData){
-        $closingCurlyPositions = ([regex]::Matches($zenCodeExpr,'\$_.*?(?=\})(})')).Groups | 
-            where {$_.Value -eq '}'} | select -ExpandProperty Index | sort -Descending
-        $txtWithinCurlies = [regex]::Matches($zenCodeExpr,'(?<=\{).*?(?=\})')
+        $closingCurlyPositions = ([regex]::Matches($ZenCodeExpression,'\$_.*?(?=\})(})')).Groups | 
+            Where-Object {$_.Value -eq '}'} | Select-Object -ExpandProperty Index | Sort-Object -Descending
+        $txtWithinCurlies = [regex]::Matches($ZenCodeExpression,'(?<=\{).*?(?=\})')
         
-        $pipelineVars = @([regex]::Matches($zenCodeExpr,'(\$_(\.\w+)*)')) 
-        $firstIndex = ($pipelineVars | sort index | select -first 1).Index
-        $pipelineVars = $pipelineVars | select -ExpandProperty Value
-        $txtWithinCurlies = $txtWithinCurlies | select -ExpandProperty Value
-        $txtWithinCurliesCount = $txtWithinCurlies | group -AsHashTable -AsString
+        $pipelineVars = @([regex]::Matches($ZenCodeExpression,'(\$_(\.\w+)*)')) 
+        $firstIndex = ($pipelineVars | Sort-Object index | Select-Object -first 1).Index
+        $pipelineVars = $pipelineVars | Select-Object -ExpandProperty Value
+        $txtWithinCurlies = $txtWithinCurlies | Select-Object -ExpandProperty Value
+        $txtWithinCurliesCount = $txtWithinCurlies | Group-Object -AsHashTable -AsString
         #if the expression contains a table, no unqualified pipelinVar ($_) and no headers, add the headers based on the property names
-        if ($zenCodeExpr -like '*table*' -and $pipelineVars -notcontains '$_' -and $zenCodeExpr -notlike '*>th*'){
-            $headerIndex = ([regex]::Matches($zenCodeExpr,'(?<=\>)table.*?(>)').Groups | 
-                where {$_.Value -eq '>' -and $_.Index -lt $firstIndex} | 
-                sort Index -Descending).Index + 1
+        if ($ZenCodeExpression -like '*table*' -and $pipelineVars -notcontains '$_' -and $ZenCodeExpression -notlike '*>th*'){
+            $headerIndex = ([regex]::Matches($ZenCodeExpression,'(?<=\>)table.*?(>)').Groups | 
+                Where-Object {$_.Value -eq '>' -and $_.Index -lt $firstIndex} | 
+                Sort-Object Index -Descending).Index + 1
             $headerExpr = 'tr>'
-            $headerExpr += (($pipelineVars.SubString(3) | foreach { "th{$_}"}) -join '+') + '^'
-            $zenCodeExpr = $zenCodeExpr.Insert($headerIndex,$headerExpr)
+            $headerExpr += (($pipelineVars.SubString(3) | ForEach-Object { "th{$_}"}) -join '+') + '^'
+            $ZenCodeExpression = $ZenCodeExpression.Insert($headerIndex,$headerExpr)
             $firstIndex += $headerExpr.Length
         }
-        $txtWithinCurlies = $txtWithinCurlies.Trim() | where {$_ -like '*$_*'} | Get-Unique
+        $txtWithinCurlies = $txtWithinCurlies.Trim() | Where-Object {$_ -like '*$_*'} | Get-Unique
         $pipelineVars=$pipelineVars.Trim() | Get-Unique
         $htReplacements = @{}
         #foreach ($curlyPos in $closingCurlyPositions){
-         #   $zenCodeExpr = $zenCodeExpr.Insert($curlyPos+1,"*$($allData.count)")
+         #   $ZenCodeExpression = $ZenCodeExpression.Insert($curlyPos+1,"*$($allData.count)")
         #}
         #add the multiplier and wrap the expression into parenthesis
-        $zenCodeExpr = $zenCodeExpr.Insert($zenCodeExpr.Substring(0,$firstIndex).LastIndexOf('>')+1,'(')
-        $zenCodeExpr += ")*$($allData.count)"
+        $ZenCodeExpression = $ZenCodeExpression.Insert($ZenCodeExpression.Substring(0,$firstIndex).LastIndexOf('>')+1,'(')
+        $ZenCodeExpression += ")*$($allData.count)"
         foreach ($var in $txtWithinCurlies){
             $guid = [guid]::NewGuid().Guid + '_'
             $htReplacements.Add($guid,$var)
-            $zenCodeExpr = $zenCodeExpr -Replace ([regex]::Escape($var) + '\b') ,($guid + '$')
+            $ZenCodeExpression = $ZenCodeExpression -Replace ([regex]::Escape($var) + '\b') ,($guid + '$')
         }
     }
     $zenCodeParser = New-Object ZenCoding.HtmlParser
-    $txt = $zenCodeParser.Parse($zenCodeExpr)
+    $txt = $zenCodeParser.Parse($ZenCodeExpression)
     $i=1
     foreach ($item in $allData){
         foreach ($replacement in $htReplacements.GetEnumerator()) { 
@@ -108,24 +105,24 @@ pipeline support. Can be used to expand zenCoding expressions within PowerShell 
                     #object, insert nested table with headers based on properties
                     if($value | Get-Member CreateObjRef -MemberType Method){
                         $tableExpr = 'table>tr>'
-                        $props = ($value | Get-Member | where {$_.MemberType -like '*Property'}).Name
-                        $tableExpr += (($props | foreach { "th{$_}"}) -join '+') + '^'
-                        $tableExpr += '(tr>' + (($props | foreach { 'td{$_.' + "$_}" }) -join '+') + ')'
-                        $replacementStr = $value | zenCode $tableExpr
+                        $props = ($value | Get-Member | Where-Object {$_.MemberType -like '*Property'}).Name
+                        $tableExpr += (($props | ForEach-Object { "th{$_}"}) -join '+') + '^'
+                        $tableExpr += '(tr>' + (($props | ForEach-Object { 'td{$_.' + "$_}" }) -join '+') + ')'
+                        $replacementStr = $value | Get-ZenCode $tableExpr
                     }
                     #values handle according to enclosingtag
                     elseif($enclosingTag -eq 'td'){
-                        $replacementStr = $value | zenCode 'table>(tr>td{$_})'
+                        $replacementStr = $value | Get-ZenCode 'table>(tr>td{$_})'
                     }
                     #li assume ul
                     elseif ($enclosingTag -eq 'li'){
                         $expr = 'ul{' + $replacement.Value.Replace('$_.','') + '}>(li{$_})'
-                        $replacementStr = $value | zenCode $expr
+                        $replacementStr = $value | Get-ZenCode $expr
                     }
                     #just repeat the element and indent the texst
                     else{
                         $expr = '(' + $enclosingTag + '[style=margin-left:2em]{$_})' 
-                        $replacementStr = $value | zenCode $expr
+                        $replacementStr = $value | Get-ZenCode $expr
                     }
 
                     $txt=$txt.Remove($firstIndex,$replacement.Key.Length+1).Insert($firstIndex,$replacementStr)

@@ -1,45 +1,34 @@
 # ISEUtils
 Collection of some useful additions for the built-in PowerShell ISE
-Some functions (New-ISESnippet, New-ISEMenu...) are PowerShell only (no C# coding in Visual Studio required) integrated (making use of the VerticalAddOnToolbar Add-Ons) (read here for more info https://powershellone.wordpress.com/2015/09/28/create-an-integrated-wpf-based-ise-add-on-with-powershell/). List of functions with short description:
+Some functions (New-ISESnippet, New-ISEMenu...) are PowerShell only (no C# coding in Visual Studio required) integrated (making use of the VerticalAddOnToolbar Add-Ons)
+(read [here](https://powershellone.wordpress.com/2015/09/28/create-an-integrated-wpf-based-ise-add-on-with-powershell/) for more info ). 
 
+The module adds automatic saving of opened files and prompt for re-opening previously saved session upon start of ISE (based on the ISESessionTools module from Oisin Grehan)
 
-references for zen coding
+List of functions of the exported functions and menu items (Add_ons/ISEUtils):
 
-https://github.com/madskristensen/zencoding  
-https://zen-coding.googlecode.com/files/ZenCodingCheatSheet.pdfc
-
-Automatic saving of opened files and prompt for re-opening previously saved session upon start of ISE (this is based on the ISESessionTools module from Oisin Grehan)
-
-- Get-ZenCode (PowerShell version of zen Coding based on WebEssentials VisualStudio extension version, with added functionality for pipeline input. See examples in Get-ZenCode.ps1. The function returns the expanded zen Code expression)
-  https://powershellone.wordpress.com/2015/11/09/zen-coding-for-the-powershell-console-and-ise/
-- Get-ISEShortcuts (returns all built-in and AddOn shortcut key bindings)
-- Get-ISESnippet 
-- Remove-ISESnippet
-- Add-ISESnippet
-- Export-SelectionToRTF (export to .rtf file)
-- Export-SelectionToHTML (export to .html file)
-- Expand-Alias (function that Expand aliases within files (path parameter) text or the current ISE Window)
-
-  https://powershellone.wordpress.com/2015/10/07/expanding-aliases-in-powershell-ise-or-any-powershell-file/
-- Find-Definition (Finds function definition within any open ISE tab or file (provided that the function is loaded))
-- Get-File (f# based PowerShell cmdlet wrapper around Directory.GetFiles ignoring PathTooLong and AccessDenied exceptions)
-- AddOn Menu "Expand ZenCode" (Enables zen Coding within PowerShell ISE, zen Code expressions are expanded by using the AddOn menu or assigned keyboard shortcut)
-- AddOn Menu "Run Line" (execute line that contains current cursor position)
-- AddOn Menu "Split selection by last char" 
-- AddOn Menu "New-ISEMenu" (integrated AddOn to create new entries for the AddOn Menu)
-- AddOn Menu "New-ISESnippet" (integrated AddOn to create new Snippets)
-- AddOn Menu "FileTree" (integrated AddOn that shows a tree with folders (on first drive) that contain .ps1 and .psm1 files, clicking on a file node will open the file within ISE)
-- AddOn Menu "Add-ScriptHelp" (integrated AddOn to generate help documentation for scripts/cmdlets. The generated output is added to the ISE and can be also copied to the clipboard)
-  https://powershellone.wordpress.com/2015/09/28/create-an-integrated-wpf-based-ise-add-on-with-powershell/
-- AddOn Menu "Open-ScriptFolder" (opens the folder that contains the current script within windows explorer)
-- AddOn Menu "Export-ISESession" (save list of currently opened scripts (excluding 'untitled') as file
-- AddOn Menu "Import-ISESession" (import previously saved session file to load session back into ISE"
-- AddOn Menu "Export-SelectionAsRTF"
-- AddOn Menu "Export-SelectionAsHTML"
-- AddOn Menu "Expand-Alias"
-- AddOn Menu "GoTo-Definition"
-- AddOn Menu "Spell check selection"
-
-
-
-
+| Function/Menu | Synopsis | Documentation |
+| --- | --- | --- |
+| Add-ISESnippet | Helper function to add a new ISE snippet | [Link](https://github.com/DBremen/ISEUtils/blob/master/docs/Add-ISESnippet.md) |
+| Expand-Alias | Function to expand aliases either in the currently active ISE file or (in case a a path is provided) within any PowerShell file (that way the function can be also used from the PowerShell Console) to their respective definitions. | [Link](https://github.com/DBremen/ISEUtils/blob/master/docs/Expand-Alias.md) |
+| Export-SelectionToHTML | Export the current selected text within ISE as .html file | [Link](https://github.com/DBremen/ISEUtils/blob/master/docs/Export-SelectionToHTML.md) |
+| Export-SelectionToRTF | Export the current selected text within ISE as .rtf file | [Link](https://github.com/DBremen/ISEUtils/blob/master/docs/Export-SelectionToRTF.md) |
+| Find-Definition | Jump to to the definition of the function that the cursor is currently placed at or inside. Searches through all open tabs within ISE. | [Link](https://github.com/DBremen/ISEUtils/blob/master/docs/Find-Definition.md) |
+| Get-IseSnippet | Get all ISE Snippets with all their properties | [Link](https://github.com/DBremen/ISEUtils/blob/master/docs/Get-IseSnippet.md) |
+| Get-ZenCode | Zen Coding for PowerShell | [Link](https://github.com/DBremen/ISEUtils/blob/master/docs/Get-ZenCode.md) |
+| Remove-ISESnippet | Remove ISE Snippets (deletes the related xml files) | [Link](https://github.com/DBremen/ISEUtils/blob/master/docs/Remove-ISESnippet.md) || Get-File | F# based PowerShell cmdlet wrapper around Directory.GetFiles ignoring PathTooLong and AccessDenied exceptions ||
+| Menu "Expand ZenCode" | Enables zen Coding within PowerShell ISE, zen Code expressions are expanded by using the AddOn menu or assigned keyboard shortcut ||
+| Menu "Run Line" | Execute line that contains current cursor position ||
+| Menu "Split selection by last char"  | Splits the selection by the last character within the selection ||
+| Menu "New-ISEMenu" | Integrated GUI to create new entries for the AddOn Menu ||
+| Menu "New-ISESnippet" | Integrated GUI to create new Snippets ||
+| Menu "FileTree" | Integrated GUI that shows a tree with folders (on first drive) that contain .ps1 and .psm1 files, clicking on a file node will open the file within ISE) ||
+| Menu "Add-ScriptHelp" | Integrated GUI to generate help documentation for scripts/cmdlets. The generated output is added to the ISE and can be also copied to the clipboard) | [Link]( https://powershellone.wordpress.com/2015/09/28/create-an-integrated-wpf-based-ise-add-on-with-powershell/) |
+| Menu Menu "Open-ScriptFolder" | Opens the folder that contains the current script within windows explorer ||
+| Menu "Export-ISESession" | Save list of currently opened scripts (excluding 'untitled') as file ||
+| Menu "Import-ISESession" | Import previously saved session file to load session back into ISE ||
+| Menu "Export-SelectionAsRTF" | Export the current selection as an RTF document ||
+| Menu "Export-SelectionAsHTML" | Export the current selection as an HTML document ||
+| Menu "Expand-Alias" | Expand all aliases within the active editor window ||
+| Menu "GoTo-Definition" | Jump to the definition of the function where the cursor is currently at. ||
+| Menu "Spell check selection" | Integrated GUI to spell check the selected text. With option to auto correct. ||

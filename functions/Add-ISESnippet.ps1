@@ -4,6 +4,12 @@
    Helper function to add a new ISE snippet
 .DESCRIPTION
    Wrapper around New-ISESnippet that automaticcaly adds the author based on $env:USERNAME and the CaretOffset based on the positon of the char '^' within the text
+.PARAMETER Title
+    Title of the snippet.
+.PARAMETER Description
+    Description of the snippet.
+.PARAMETER Text
+    Body of the snippet.
 .EXAMPLE
     $txt=@"
     [PSCustomObject][ordered]@{

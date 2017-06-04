@@ -8,6 +8,8 @@
     .EXAMPLE
        Export-SelectionToHTML
     #>
+    [CmdletBinding()]
+    param()
     [void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     $SaveFileDialog = New-Object Windows.Forms.SaveFileDialog
     $SaveFileDialog.Filter = "HTML files (*.html)|*.html"

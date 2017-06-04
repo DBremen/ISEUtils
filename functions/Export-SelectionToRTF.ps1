@@ -8,6 +8,8 @@
     .EXAMPLE
        Export-SelectionToRTF
     #>
+    [CmdletBinding()]
+    param()
     $text = $psise.CurrentFile.Editor.SelectedText
     if (-not $text) {
         Write-Warning 'No text selected'
